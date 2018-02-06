@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    var skt = io();
+    $(function(){
+      $('#genhash').on('click',function(){
+        skt.emit('genhash',$('#rawpass').val());
+      });
+      $('#validate').on('click',function(){
+        var targethash = $('#hash').val();
+        var targetpass = $('#checkpass').val();
+        skt.emit('validate',{hash:targethash,pass:targetpass});
+      });
+      skt.on('hashgenerated',function(data){
+        $("#hash").val(data);
+        $("#hashlength").html(`(${data.length})`);
+      });
+      skt.on('validateres',function(data){
+        alert(data);
+      });
+    });
+  </script>
+  <body>
+    <div>
+      <label>create hash from :
+        <input type="text" id="rawpass" placeholder="random word"/>
+        <input type="button" id="genhash" value="generate hash" />
+      </label>
+    </div>
+    <div>
+      <label>hash to be tested
+        <input type="text" id="hash" placeholder="generated hash"/><span id="hashlength"></span><br />
+        +<input type="text" id="checkpass"  placeholder="word to test with the hash"/><input type="button" id="validate" value="validate hash" />
+      </label>
+    </div>
+  </body>
+</html>
